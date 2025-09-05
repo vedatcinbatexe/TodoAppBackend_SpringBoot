@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.todoapp.Models.TodoApiResponse;
 import com.example.todoapp.Models.User;
+import com.example.todoapp.Models.UserTodosApiResponse;
+import com.example.todoapp.Services.UserPrincipal;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,14 +39,29 @@ public class UsersV1Controller {
 
     @GetMapping("{userId}")
     public ResponseEntity<UserApiResponse> getUser(@PathVariable Long userId) {
-        Optional<User> user = userService.getOneUser(userId);
+        User user = userService.getOneUser(userId);
 
-        if(user.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        UserApiResponse userApiResponse = new UserApiResponse(user.get().getUserId(), user.get().getEmail(), user.get().getFirstName(), user.get().getLastName());
+        UserApiResponse userApiResponse = new UserApiResponse(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName());
 
         return ResponseEntity.ok(userApiResponse);
+    }
+
+    @GetMapping("/get-todos")
+    public ResponseEntity<UserTodosApiResponse> getUserTodos(Authentication authentication) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        Long currentUserId = userPrincipal.getId();
+
+        User user = userService.getOneUser(currentUserId);
+
+        if(user == null) {
+            return  ResponseEntity.notFound().build();
+        }
+
+        List<TodoApiResponse> todoApiResponse = user.getTodos().stream().map(t -> new TodoApiResponse(t.getTodoId(), t.getCaption(), t.getDescription())).toList();
+
+        UserTodosApiResponse response = new UserTodosApiResponse(user.getUserId(), user.getEmail(), user.getFirstName(), user.getLastName(), todoApiResponse);
+
+        return ResponseEntity.ok(response);
     }
 }

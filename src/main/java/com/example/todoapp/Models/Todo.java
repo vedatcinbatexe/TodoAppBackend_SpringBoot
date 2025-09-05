@@ -9,6 +9,7 @@ public class Todo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long todoId;
+    private String caption;
     private TodoStatus status;
     private String description;
 
@@ -18,8 +19,9 @@ public class Todo {
 
     public Todo() {}
 
-    public Todo(long todoId, TodoStatus status, String description) {
+    public Todo(long todoId, String caption, TodoStatus status, String description) {
         this.todoId = todoId;
+        this.caption = caption;
         this.status = status;
         this.description = description;
     }
@@ -30,6 +32,14 @@ public class Todo {
 
     public void setTodoId(long todoId) {
         this.todoId = todoId;
+    }
+
+    public String getCaption() {
+        return this.caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public TodoStatus getStatus() {
