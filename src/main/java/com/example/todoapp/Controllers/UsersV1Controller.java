@@ -3,21 +3,11 @@ package com.example.todoapp.Controllers;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.todoapp.Models.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.todoapp.Models.CreateTodoApiRequest;
-import com.example.todoapp.Models.TodoApiResponse;
-import com.example.todoapp.Models.TodoCreatedApiResponse;
-import com.example.todoapp.Models.User;
-import com.example.todoapp.Models.UserApiResponse;
-import com.example.todoapp.Models.UserTodosApiResponse;
 import com.example.todoapp.Services.TodoService;
 import com.example.todoapp.Services.UserPrincipal;
 import com.example.todoapp.Services.UserService;
@@ -84,6 +74,18 @@ public class UsersV1Controller {
 
         // Call "createTodo" from todoService
         TodoCreatedApiResponse response = todoService.createTodo(currentUserId, request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/change-todo-status")
+    public ResponseEntity<TodoStatusChangedApiResponse> changeTodoStatus(@Valid @RequestBody TodoStatusChangeApiRequest request, Authentication authentication) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+        Long currentUserId = userPrincipal.getId();
+
+        // Call "changeTodoStatus" from todoService
+        TodoStatusChangedApiResponse response = todoService.changeTodoStatus(currentUserId, request);
 
         return ResponseEntity.ok(response);
     }
