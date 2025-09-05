@@ -1,14 +1,12 @@
 package com.example.todoapp.Services;
 
-import com.example.todoapp.Models.TodoApiResponse;
-import com.example.todoapp.Models.User;
-import com.example.todoapp.Models.UserTodosApiResponse;
-import com.example.todoapp.Repositories.TodoRepository;
-import com.example.todoapp.Repositories.UserRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.todoapp.Models.User;
+import com.example.todoapp.Repositories.TodoRepository;
+import com.example.todoapp.Repositories.UserRepository;
 
 @Service
 public class UserService {
@@ -25,7 +23,11 @@ public class UserService {
     }
 
     public User getOneUser(Long userId) {
-        return userRepository.findById(userId).get();
+        return userRepository.findById(userId).orElse(null);
+    }
+
+    public User getOneUserWithTodos(Long userId) {
+        return userRepository.findByIdWithTodos(userId).orElse(null);
     }
 
     /*
